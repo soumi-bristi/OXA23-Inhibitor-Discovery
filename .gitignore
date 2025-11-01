@@ -1,0 +1,54 @@
+# -----------------------
+# Python cache & env
+# -----------------------
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+.env
+.venv/
+venv/
+env/
+*.egg-info/
+
+# -----------------------
+# Jupyter notebooks checkpoints
+# -----------------------
+.ipynb_checkpoints/
+
+# -----------------------
+# Reinvent specific
+# -----------------------
+reinvent4/logs/
+reinvent4/checkpoints/
+reinvent4/output/
+reinvent4/temp/
+reinvent4/results/  # keep if you want, else can track
+
+# -----------------------
+# Docking results folder (track contents)
+# -----------------------
+# docking result/   <-- folder tracked, content tracked
+
+# -----------------------
+# Data files (optional keep raw data)
+# -----------------------
+data/tmp/
+*.csv
+*.tsv
+
+# -----------------------
+# OS & editor junk
+# -----------------------
+.DS_Store
+Thumbs.db
+*.swp
+*.bak
+*.tmp
+
+# -----------------------
+# OneDrive conflicts
+# -----------------------
+*.lnk
+~$*

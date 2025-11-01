@@ -1,0 +1,52 @@
+device = "cpu"                # Runs entirely on CPU (replace with "cuda" if you have GPU support)
+run_type = "staged_learning"  # Required top-level field
+
+[parameters]
+summary_csv_prefix = "pde4_scaffold1_stage2"  # Your Stage 2 output prefix
+use_checkpoint = true
+purge_memories = false
+prior_file = "/home/swaroop/REINVENT4/priors/reinvent.prior"  # Your prior model
+agent_file = "scaffold1_maxsim.chkpt"  # Use your Stage 1 checkpoint
+batch_size = 64
+unique_sequences = true
+randomize_smiles = true
+tb_isim = false
+
+[learning_strategy]
+type = "dap"
+sigma = 128
+rate = 0.0001
+
+[diversity_filter]
+type = "IdenticalMurckoScaffold"  # Prevents redundant Murcko scaffolds
+bucket_size = 25
+minscore = 0.7                    # Optional: Only keep highly similar scaffolds
+
+[[stage]]
+max_steps = 500                   # Number of learning steps for Stage 2
+chkpt_file = "scaffold1_maxsim_qed.chkpt"  # New checkpoint for Stage 2
+termination = "simple"            # Terminate on max_steps or max_score
+max_score = 0.8                   # Very ambitious target (optional early stop)
+min_steps = 25
+
+[stage.scoring]
+type = "geometric_mean"           # Multiplicative combination of components
+
+[[stage.scoring.component]]       # Scaffold similarity (majority weight)
+[stage.scoring.component.tanimoto_similarity]
+[[stage.scoring.component.tanimoto_similarity.endpoint]]
+name = "Scaffold Similarity"
+weight = 0.8                      # 80% weight on similarity
+params.smiles = ["B1([C@@H]2C[C@@H]2C3=C(O1)C(=C(C=C3)F)C(=O)O)O"]  # Your PDE4 scaffold
+params.threshold = 0.6            # Reject below this Tanimoto score
+params.radius = 2
+params.use_counts = true
+params.use_features = false
+
+[[stage.scoring.component]]       # Drug-likeness (minority weight, strict cutoff)
+[stage.scoring.component.qed]
+[[stage.scoring.component.qed.endpoint]]
+name = "Drug Likeness"
+weight = 0.2                      # 20% weight on QED
+params.min = 0.8                  # Only accept QED ≥ 0.8 (very drug-like)
+
